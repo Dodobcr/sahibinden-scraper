@@ -1,4 +1,0 @@
-DrissionPage>=4.0
-beautifulsoup4>=4.12
-lxml>=5.0
-openpyxl>=3.1
