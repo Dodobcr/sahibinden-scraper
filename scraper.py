@@ -106,6 +106,8 @@ def extract_id(url: str) -> str:
 
 def get_links_from_page(soup) -> list:
     links, seen = [], set()
+
+    # Yontem 1: classifiedTitle class
     for a in soup.find_all("a", class_="classifiedTitle"):
         href = a.get("href", "")
         if href and "/ilan/" in href:
@@ -114,6 +116,27 @@ def get_links_from_page(soup) -> list:
             if lid and lid not in seen:
                 links.append(full)
                 seen.add(lid)
+
+    # Yontem 2: /ilan/ iceren tum linkler (classifiedTitle bulunamazsa)
+    if not links:
+        print("  [DEBUG] classifiedTitle bulunamadi, /ilan/ linkleri deneniyor...", flush=True)
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if "/ilan/" in href and "/detay" in href:
+                full = "https://www.sahibinden.com" + href if href.startswith("/") else href
+                lid  = extract_id(full)
+                if lid and lid not in seen:
+                    links.append(full)
+                    seen.add(lid)
+
+    # Debug: 0 ilan bulununca sayfa basligini goster
+    if not links:
+        title = soup.find("title")
+        print(f"  [DEBUG] Sayfa title: {title.get_text() if title else 'yok'}", flush=True)
+        # Sayfadaki ilk 800 karakteri goster
+        text = soup.get_text()[:800].replace('\n', ' ').strip()
+        print(f"  [DEBUG] Sayfa icerigi: {text}", flush=True)
+
     return links
 
 
