@@ -269,6 +269,25 @@ def parse_detail(driver, url: str) -> dict:
     return row
 
 
+# ─── CLOUDFLARE BEKLEME ───────────────────────────────────────
+
+def wait_for_page(driver, timeout=40):
+    """Cloudflare 'Just a moment' gecene kadar bekle, sonra 3 sn daha."""
+    print("  Sayfa yukleniyor...", flush=True)
+    for i in range(timeout):
+        try:
+            title = driver.title or ""
+        except Exception:
+            title = ""
+        if "just a moment" not in title.lower():
+            print(f"  Sayfa hazir ({i+1}s): {title[:60]}", flush=True)
+            time.sleep(random.uniform(3, 5))
+            return
+        time.sleep(1)
+    print(f"  Uyari: {timeout}s sonra hala yuklenmedi.", flush=True)
+    time.sleep(3)
+
+
 # ─── ANA SCRAPE ───────────────────────────────────────────────
 
 def run_scrape(driver, urls: list, seen: set) -> tuple:
@@ -283,7 +302,7 @@ def run_scrape(driver, urls: list, seen: set) -> tuple:
 
         print(f"\n[{u_idx+1}/{len(urls)}] URL: {base_url}", flush=True)
         driver.get(base_url)
-        time.sleep(random.uniform(4, 8))
+        wait_for_page(driver)
         page_num = 1
 
         while page_num <= MAX_PAGES:
@@ -355,7 +374,7 @@ def run_scrape(driver, urls: list, seen: set) -> tuple:
             print(f"  Sonraki sayfa – {pw:.1f}s...", flush=True)
             time.sleep(pw)
             driver.get(next_url)
-            time.sleep(random.uniform(4, 7))
+            wait_for_page(driver)
             page_num += 1
 
         if u_idx < len(urls) - 1 and total_new < MAX_LISTINGS:
