@@ -386,7 +386,6 @@ def main():
     # Chrome başlat
     print("\n[CHROME] Başlatılıyor...", flush=True)
     opts = ChromiumOptions()
-    opts.headless()
     opts.set_argument("--no-sandbox")
     opts.set_argument("--disable-dev-shm-usage")
     opts.set_argument("--disable-blink-features=AutomationControlled")
@@ -394,6 +393,13 @@ def main():
     opts.set_argument("--lang=tr-TR,tr;q=0.9")
     opts.set_argument("--disable-notifications")
     opts.set_argument("--window-size=1920,1080")
+    opts.set_argument("--disable-gpu")
+    # DISPLAY varsa xvfb kullan (headless degil - Cloudflare bypass)
+    if not os.environ.get("DISPLAY"):
+        opts.headless()
+        print("[CHROME] Headless mod (DISPLAY yok)", flush=True)
+    else:
+        print(f"[CHROME] Sanal ekran modu DISPLAY={os.environ.get('DISPLAY')}", flush=True)
 
     driver = ChromiumPage(addr_or_opts=opts)
     try:

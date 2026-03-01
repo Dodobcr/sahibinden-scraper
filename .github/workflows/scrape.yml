@@ -25,10 +25,13 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements.txt
 
-      - name: Chrome kur
+      - name: Chrome ve xvfb kur
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q google-chrome-stable
+          sudo apt-get install -y -q google-chrome-stable xvfb
+          Xvfb :99 -screen 0 1920x1080x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+          sleep 2
 
       - name: Scraper çalıştır
         env:
