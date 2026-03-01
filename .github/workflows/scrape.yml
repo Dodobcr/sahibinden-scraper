@@ -41,7 +41,9 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ilanlar.csv ilanlar.xlsx seen.json
-          git diff --staged --quiet && echo "Değişiklik yok." || \
-            git commit -m "Güncelleme $(date '+%Y-%m-%d %H:%M') — ${{ env.NEW_COUNT }} yeni ilan"
+          for f in ilanlar.csv ilanlar.xlsx seen.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          git diff --staged --quiet && echo "Degisiklik yok." || \
+            git commit -m "Guncelleme $(date '+%Y-%m-%d %H:%M') - ${{ env.NEW_COUNT }} yeni ilan"
           git push
